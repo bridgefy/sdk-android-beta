@@ -1,5 +1,4 @@
 # SDK Android Beta Documentation
-# Bridgefy
 
 ## Overview
 
@@ -20,6 +19,85 @@ Integrate the Bridgefy SDK into your Android and iOS app to reach the 3.5 billio
 All the connections are handled seamlessly by the SDK to create a mesh network. The size of this network depends on the number of devices connected and the environment as a variable factor, allowing you to join nodes in the same network or nodes in different networks.
 
 ![https://github.com/bridgefy/bridgefy-ios-sdk-sample/blob/master/img/Mobile_Adhoc_Network.gif?raw=true](https://github.com/bridgefy/bridgefy-ios-sdk-sample/blob/master/img/Mobile_Adhoc_Network.gif?raw=true)
+
+## Permissions
+Android requires additional permissions declared in the manifest for an app to run a BLE scan since API 23 (6.0 / Marshmallow) and perform a Bluetooth Low Energy connection since API 31 (Android 12). These permissions currently assume scanning is only used when the App is in the foreground, and that the App wants to derive the user's location from Bluetooth Low Energy signal (on API >= 23). Below are a number of additions you can make to your `AndroidManifext.xml` for your specific use case.
+
+#### Location permission for Bluetooth Low Energy Scanning
+Bridgefy uses the `uses-permission-sdk-23` tag to require location only on APIs >= 23, require to scan for BLE peripherals and do not access location otherwise you can request only the required permissions by adding the following to your `AndroidManifest.xml`:
+```xml
+<uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION" android:maxSdkVersion="30" tools:node="replace" />
+<uses-permission-sdk-23 android:name="android.permission.ACCESS_FINE_LOCATION" android:maxSdkVersion="30" tools:node="replace" />
+```
+
+#### Scan in the background and support APIs 29 & 30
+You should add the following to your `AndroidManifest.xml`:
+```xml
+<uses-permission android:name="android.permission.ACCESS_BACKGROUND_LOCATION" android:maxSdkVersion="30" />
+```
+If you want to access the user's location in the background on APIs > 30, remove the `android:maxSdkVersion` attribute.
+
+#### Location from BLE scanning in API >= 31
+
+API 31 (Android 12) introduced new Bluetooth permissions. Bridgefy uses the `android:usesPermissionFlags="neverForLocation"` attribute on the `BLUETOOTH_SCAN` permission, which indicates scanning will not be used to derive the user's location, so location permissions are not required. If you need to locate the user with BLE scanning, use this instead, but keep in mind that you will still need `ACCESS_FINE_LOCATION`:
+```xml
+<uses-permission android:name="android.permission.BLUETOOTH_SCAN" tools:node="replace" />
+```
+
+#### Connect peripherals
+You add the `BLUETOOTH_CONNECT` permission that Bridgefy requests in APIs >= 31:
+```xml
+<uses-permission android:name="android.permission.BLUETOOTH_CONNECT" />
+```
+
+#### Summary of available permissions
+##### Scanning
+A summary of available runtime permissions used for BLE scanning:
+
+| from API | to API (inclusive) | Acceptable runtime permissions |
+|:---:|:---:| --- |
+| 18 | 22 | (No runtime permissions needed) |
+| 23 | 28 | One of below:<br>- `android.permission.ACCESS_COARSE_LOCATION`<br>- `android.permission.ACCESS_FINE_LOCATION` |
+| 29 | 30 | - `android.permission.ACCESS_FINE_LOCATION`<br>- `android.permission.ACCESS_BACKGROUND_LOCATION`\* |
+| 31 | current | - `android.permission.BLUETOOTH_SCAN`<br>- `android.permission.ACCESS_FINE_LOCATION`\*\* |
+
+\* Needed if [scan is performed in background](https://developer.android.com/about/versions/10/privacy/changes#app-access-device-location)
+
+## Gradle
+Bridgefy BETA version is available in our private repository to install it you must follow the instructions:
+```kotlin
+val bridgefy_beta_maven_url = "http://104.196.228.98:8081/artifactory/libs-snapshot-local"
+val bridgefy_beta_username = "bridgefy-beta"
+val bridgefy_beta_password = "g$thaP@ad8w=w=OT78_r"
+
+allprojects {
+  repositories {
+    maven {
+                url = java.net.URI(bridgefy_beta_maven_url)
+                authentication {
+                    create<BasicAuthentication>("basic")
+                }
+                credentials {
+                    username = bridgefy_beta_username
+                    password = bridgefy_beta_password
+                }
+                isAllowInsecureProtocol = true
+            }
+    }
+}
+
+/**
+ * Declare dependencies
+ * @see http://www.gradle.org/docs/current/userguide/userguide_single.html#sec:how_to_declare_your_dependencies
+ */
+dependencies {
+  implementation (group = "me.bridgefy", name = "android-sdk", version = "0.1.0-SNAPSHOT", ext = "aar") { 
+    isTransitive = true 
+  }
+}
+
+```
+
 
 # Usage
 ### Start the SDK
@@ -62,7 +140,7 @@ The following method is invoked when a peer has established connection:
     val delegate: BridgefyDelegate = object : BridgefyDelegate {
     
         override fun onConnected(userID: String) {
-            TODO("Not yet implemented")
+            ...
         }
     
     }
@@ -75,7 +153,7 @@ When a peer is disconnected(out of range), the following method will be invoked:
     val delegate: BridgefyDelegate = object : BridgefyDelegate {
 
         override fun onDisconnected(userID: String) {
-            TODO("Not yet implemented")
+            ...
         }
     
     }
@@ -131,7 +209,7 @@ If there is no error when sending the message, the following method will be rece
          * @param messageID
          */
         override fun onSend(messageID: String) {
-            TODO("Not yet implemented")
+            ...
         }
     
     }
@@ -147,7 +225,7 @@ otherwise, the following method will be received
          * @param messageID
          */
         override fun onFailToSend(messageID: String) {
-            TODO("Not yet implemented")
+            ...
         }
     }
 ```
@@ -175,7 +253,7 @@ A message can be transmitted using mesh transmission, direct transmission, or bo
             messageID: String,
             transmissionMode: TransmissionMode,
         ) {
-            TODO("Not yet implemented")
+            ...
         }   
     }
 
@@ -194,34 +272,10 @@ A message can be transmitted using mesh transmission, direct transmission, or bo
  * Propagation profile
  */
 enum class PropagationProfile {
-    /**
-     * Standard
-     *
-     */
     Standard,
-
-    /**
-     * High density environment
-     *
-     */
     HighDensityEnvironment,
-
-    /**
-     * Sparse environment
-     *
-     */
     SparseEnvironment,
-
-    /**
-     * Long reach
-     *
-     */
     LongReach,
-
-    /**
-     * Short reach
-     *
-     */
     ShortReach
 }
 ```
