@@ -1,9 +1,5 @@
 # SDK Android Beta Documentation
 
-> :bangbang: **The Bridgefy SDK** currently supports **P2P connections**, but we're adding **Mesh Networking, Broadcast, and Signal Protocol** encryption by mid-October! You can begin integrating the current version and add the updates as they're published.
-
-## Overview
-
 The Bridgefy Software Development Kit (SDK) is a state-of-the-art, plug-and-play package of awesomeness that will let people use your mobile app when they don’t have access to the Internet by using mesh networks.
 
 Integrate the Bridgefy SDK into your Android and iOS app to reach the 3.5 billion people that don’t always have access to an Internet connection, and watch engagement and revenue grow!
