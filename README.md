@@ -69,18 +69,18 @@ val bridgefy_beta_username = "bridgefy-beta"
 val bridgefy_beta_password = "g$thaP@ad8w=w=OT78_r"
 
 allprojects {
-  repositories {
-    maven {
-                url = java.net.URI(bridgefy_beta_maven_url)
-                authentication {
-                    create<BasicAuthentication>("basic")
-                }
-                credentials {
-                    username = bridgefy_beta_username
-                    password = bridgefy_beta_password
-                }
-                isAllowInsecureProtocol = true
+    repositories {
+        maven {
+            url = java.net.URI(bridgefy_beta_maven_url)
+            authentication {
+                create<BasicAuthentication>("basic")
             }
+            credentials {
+                username = bridgefy_beta_username
+                password = bridgefy_beta_password
+            }
+            isAllowInsecureProtocol = true
+        }
     }
 }
 
@@ -89,9 +89,9 @@ allprojects {
  * @see http://www.gradle.org/docs/current/userguide/userguide_single.html#sec:how_to_declare_your_dependencies
  */
 dependencies {
-  implementation (group = "me.bridgefy", name = "android-sdk", version = "0.3.0-SNAPSHOT", ext = "aar") { 
-    isTransitive = true 
-  }
+    implementation (group = "me.bridgefy", name = "android-sdk", version = "0.3.0-SNAPSHOT", ext = "aar") {
+        isTransitive = true
+    }
 }
 
 ```
@@ -104,17 +104,17 @@ The following code shows how to start the SDK (using your API key) and how to as
 
 ```kotlin
     /**
-     * Init bridgefy SDK
-     *
-     * @param bridgefyApiKey - API KEY
-     * @param propagationProfile - Default PropagationProfile.Standard
-     * @param delegate - The delegate object listens for all bridgefy actions.
-     */
-    fun init(
-            bridgefyApiKey: String?,
-            propagationProfile: PropagationProfile = PropagationProfile.Standard,
-            delegate: BridgefyDelegate?
-        )
+ * Init bridgefy SDK
+ *
+ * @param bridgefyApiKey - API KEY
+ * @param propagationProfile - Default PropagationProfile.Standard
+ * @param delegate - The delegate object listens for all bridgefy actions.
+ */
+fun init(
+    bridgefyApiKey: String?,
+    propagationProfile: PropagationProfile = PropagationProfile.Standard,
+    delegate: BridgefyDelegate?
+)
 ```
 
 The string **“bridgefyApiKey”** represents a valid API key. An Internet connection is needed at least for the first time in order to validate the license.
@@ -122,11 +122,11 @@ To stop it, use the following code:
 
 ```kotlin
 
-    /**
-     * Stop bridgefy sdk operations
-     *
-     */
-    fun stop()
+/**
+ * Stop bridgefy sdk operations
+ *
+ */
+fun stop()
 
 ```
 
@@ -136,28 +136,51 @@ The following method is invoked when a peer has established connection:
 
 ```kotlin
     val delegate: BridgefyDelegate = object : BridgefyDelegate {
-    
-        override fun onConnected(userID: String) {
-            ...
-        }
-    
+
+    override fun onConnected(userID: String) {
+        ...
     }
+
+}
 ```
 
 **userID**: Identifier of the user that has established a connection.
+
+
 When a peer is disconnected(out of range), the following method will be invoked:
 
 ```kotlin
     val delegate: BridgefyDelegate = object : BridgefyDelegate {
 
-        override fun onDisconnected(userID: String) {
-            ...
-        }
-    
+    override fun onDisconnected(userID: String) {
+        ...
     }
+
+}
 ```
 
 **userID**: Identifier of the disconnected user.
+
+
+
+When a device is detected, notifies the list of connected users:
+
+```kotlin
+    val delegate: BridgefyDelegate = object : BridgefyDelegate {
+
+    /**
+     * On connected peers
+     *
+     * @param connectedPeers
+     */
+    fun onConnectedPeers(connectedPeers: List<UUID>) {
+        ...
+    }
+
+}
+```
+
+**connectedPeers**: List of identifiers of the connected user.
 
 ### Send data
 
@@ -165,14 +188,14 @@ The following method is used to send data using a transmission mode. This method
 
 ```kotlin
     import me.bridgefy.commons.TransmissionMode
-    // Bridgefy instance
-    val bridgefy: Bridgefy
-    
-    // After start sdk, send ByteArray
-    val messageId = bridgefy.send(
-        "Sample text!".toByteArray(Charsets.UTF_8),
-        TransmissionMode.P2P(userId)
-    )
+// Bridgefy instance
+val bridgefy: Bridgefy
+
+// After start sdk, send ByteArray
+val messageId = bridgefy.send(
+    "Sample text!".toByteArray(Charsets.UTF_8),
+    TransmissionMode.P2P(userId)
+)
 ```
 
 **messageID**: Unique identifier related to the message.
@@ -201,31 +224,31 @@ If there is no error when sending the message, the following method will be rece
 
 ```kotlin
     val delegate: BridgefyDelegate = object : BridgefyDelegate {
-        /**
-         * On send
-         *
-         * @param messageID
-         */
-        override fun onSend(messageID: String) {
-            ...
-        }
-    
+    /**
+     * On send
+     *
+     * @param messageID
+     */
+    override fun onSend(messageID: String) {
+        ...
     }
+
+}
 ```
 
 otherwise, the following method will be received
 
 ```kotlin
     val delegate: BridgefyDelegate = object : BridgefyDelegate {
-        /**
-         * On fail to send
-         *
-         * @param messageID
-         */
-        override fun onFailToSend(messageID: String) {
-            ...
-        }
+    /**
+     * On fail to send
+     *
+     * @param messageID
+     */
+    override fun onFailToSend(messageID: String) {
+        ...
     }
+}
 ```
 
 ### Direct and Mesh transmission
@@ -237,23 +260,23 @@ A message can be transmitted using mesh transmission, direct transmission, or bo
 ### Receive Data When a packet has been received, the following method will be invoked:
 
 ```kotlin
-    
-    val delegate: BridgefyDelegate = object : BridgefyDelegate {
-        /**
-         * On receive
-         *
-         * @param data
-         * @param messageID
-         * @param transmissionMode
-         */
-        override fun onReceive(
-            data: ByteArray,
-            messageID: String,
-            transmissionMode: TransmissionMode,
-        ) {
-            ...
-        }   
+
+val delegate: BridgefyDelegate = object : BridgefyDelegate {
+    /**
+     * On receive
+     *
+     * @param data
+     * @param messageID
+     * @param transmissionMode
+     */
+    override fun onReceive(
+        data: ByteArray,
+        messageID: String,
+        transmissionMode: TransmissionMode,
+    ) {
+        ...
     }
+}
 
 ```
 
