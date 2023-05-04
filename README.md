@@ -89,7 +89,7 @@ allprojects {
  * @see http://www.gradle.org/docs/current/userguide/userguide_single.html#sec:how_to_declare_your_dependencies
  */
 dependencies {
-    implementation (group = "me.bridgefy", name = "android-sdk", version = "0.3.0-SNAPSHOT", ext = "aar") {
+    implementation (group = "me.bridgefy", name = "android-sdk", version = "0.4.0-SNAPSHOT", ext = "aar") {
         isTransitive = true
     }
 }
