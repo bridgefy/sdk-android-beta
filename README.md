@@ -6,7 +6,7 @@
     <img src="https://3290834949-files.gitbook.io/~/files/v0/b/gitbook-x-prod.appspot.com/o/spaces%2F5XKIMMP6VF2l9XuPV80l%2Fuploads%2FD0HSf0lWC4pWB4U7inIw%2Fharegit.jpg?alt=media&token=a400cf7d-3254-4afc-bed0-48f7d98205b0"/>
 </p>
 
-The Bridgefy Software Development Kit (SDK) is a state-of-the-art, plug-and-play package of awesomeness that will let people use your mobile app when they don’t have access to the Internet by using mesh networks.
+The Bridgefy Software Development Kit (SDK) is a state-of-the-art, plug-and-play package that will let people use your mobile app when they don’t have access to the Internet, by using Bluetooth mesh networks.
 
 Integrate the Bridgefy SDK into your Android and iOS app to reach the 3.5 billion people that don’t always have access to an Internet connection, and watch engagement and revenue grow!
 
@@ -17,11 +17,11 @@ Integrate the Bridgefy SDK into your Android and iOS app to reach the 3.5 billio
 
 ## Overview
 
-Bridgefy uses a technology called mesh networking, where devices connect directly to each other in a decentralized manner. This allows users to communicate with nearby devices within a certain range, forming a network without the need for a centralized server or internet access.
+Bridgefy creates mesh networks in which devices connect directly to each other in a decentralized manner. This allows users to communicate with nearby devices within a certain range, forming a network without the need for a centralized server or Internet access.
 
 ![networking](https://images.saymedia-content.com/.image/t_share/MTkzOTUzODU0MDkyNjE3MjIx/particlesjs-examples.gif)
 
-The SDK provides a set of tools and APIs that developers can use to incorporate offline messaging, data transfer, and real-time communication features into their applications. It allows users to send data directly to other nearby devices using Bluetooth Low Energy.
+The Bridgefy SDK provides a set of tools and APIs that developers can use to incorporate offline messaging, data transfer, and real-time communication features into their applications. It allows users to send data directly to other nearby devices using Bluetooth Low Energy.
 
 ### Table of contents
 
@@ -49,7 +49,8 @@ The SDK provides a set of tools and APIs that developers can use to incorporate 
 1. [Contact & Support](#contact--support)
     
 ## Setup
-Bridgefy SDK is available in our public repository to install it you must follow the instructions:
+Bridgefy SDK is available in our public repository. To install it you must follow the instructions:
+
 ```kotlin
 val bridgefy_release_maven_url = "http://104.196.228.98:8081/artifactory/libs-release-local"
 
@@ -63,6 +64,7 @@ allprojects {
 }
 ```
 In the app module **build.gradle** :
+
 ```kotlin
 
 /**
@@ -86,7 +88,7 @@ Supported on Android 6 (minSdk = 23) and above with compileSdk >= 31
 Android requires additional permissions declared in the manifest for an app to run a BLE scan since API 23 (6.0 / Marshmallow) and perform a Bluetooth Low Energy connection since API 31 (Android 12). These permissions currently assume scanning is only used when the App is in the foreground, and that the App wants to derive the user's location from Bluetooth Low Energy signal (on API >= 23). Below are a number of additions you can make to your `AndroidManifext.xml` for your specific use case.
 
 #### Location permission for Bluetooth Low Energy Scanning
-Bridgefy uses the `uses-permission-sdk-23` tag to require location only on APIs >= 23, require to scan for BLE peripherals and do not access location otherwise you can request only the required permissions by adding the following to your `AndroidManifest.xml`:
+Bridgefy uses the `uses-permission-sdk-23` tag to require location only on APIs >= 23, you can request the required permissions by adding the following to your `AndroidManifest.xml`:
 ```xml
 <uses-permission-sdk-23 android:name="android.permission.ACCESS_COARSE_LOCATION"
     android:maxSdkVersion="30"
@@ -127,7 +129,7 @@ A summary of available runtime permissions used for BLE:
 |    18    |         22         | (No runtime permissions needed)                                                                                                                                                                                              |
 |    23    |         28         | One of below: <br>- `android.permission.ACCESS_COARSE_LOCATION`<br>- `android.permission.ACCESS_FINE_LOCATION`                                                                                                               |
 |    29    |         30         | - `android.permission.ACCESS_FINE_LOCATION`<br>- `android.permission.ACCESS_BACKGROUND_LOCATION`\*                                                                                                                           |
-|    31    |      current       | - `android.permission.BLUETOOTH_SCAN`<br>-  `android.permission.ACCESS_FINE_LOCATION`\*\*<br>- `android.permission.BLUETOOTH_SCAN`<br>- `android.permission.BLUETOOTH_ADVERTISE`<br>- `android.permission.BLUETOOTH_CONNECT` |
+|    31    |      current       | - `android.permission.ACCESS_FINE_LOCATION`\*\*<br>- `android.permission.BLUETOOTH_SCAN`<br>- `android.permission.BLUETOOTH_ADVERTISE`<br>- `android.permission.BLUETOOTH_CONNECT` |
 
 * Needed if [scan is performed in background](https://developer.android.com/about/versions/10/privacy/changes#app-access-device-location)
 
@@ -137,7 +139,7 @@ A summary of available runtime permissions used for BLE:
 
 The following code shows how to start the SDK (using your API key) and how to assign the delegate.
 #### Android Manifest
-Locate the AndroidManifest.xml file within your project. It is usually located in the "app" or "src/main" directory. Add the <meta-data> element as a child element inside the component tag.
+Locate the AndroidManifest.xml file within your project. It is usually located in the "app" or "src/main" directory. Add the <meta-data> element as application element inside the component tag.
 
 ````xml
 <manifest>
@@ -249,7 +251,7 @@ When a device is detected, notifies the list of connected users:
 
 ### Send data
 
-The following method is used to send data using a transmission mode. This method returns the message id (**messageID**) to the client.
+The following method is used to send data using a transmission mode. This method returns the message ID (**messageID**) to the client.
 
 ```kotlin
 import me.bridgefy.commons.TransmissionMode
@@ -292,10 +294,10 @@ open class TransmissionMode {
 There are several modes for sending packets:
 
 **P2P(val receiver: String)**: Sends the packet only when the receiver is in range. <br>
-**Mesh(val receiver: String)**: Sends the packet using mesh. It doesn't need the receiver to be in range. <br>
-**Broadcast**: Sends a packet using mesh without a defined receiver. The packet is broadcast to all nearby users that are or aren’t in range. <br>
+**Mesh(val receiver: String)**: Sends the packet using mesh to only once receiver. It doesn't need the receiver to be in range. Receiver can be in range of a third receiver located within range of both sender and receiver at the same time, or receiver can be out of range of all other nodes, but eventually come within range of a node that at some point received the packet. Mesh messages can be received my multiple nodes, but can only be read by the intended receiver. <br>
+**Broadcast**: Sends a packet using mesh without a defined receiver. The packet is broadcast to all nearby users that are in range, who then broadcast it to all receivers that are in their range, and so on. If a user isn't in range, the packet will be delivered the next time said user comes within range of another user who did receive the packet. Broadcast messages can be read by all nodes that receive it. <br>
 
-If there is no error when sending the message, the following method will be received with the message id (**messageID**)
+If there is no error when sending the message, will be received with the message id (**messageID**)
 
 ```kotlin
     val delegate: BridgefyDelegate = object : BridgefyDelegate {
@@ -331,7 +333,6 @@ otherwise, the following method will be received
 Direct transmission is a mechanism used to deliver packets to a user that is nearby or visible (a connection has been detected).
 Mesh transmission is a mechanism used to deliver offline packets even when the receiving user isn’t nearby or visible. It can be achieved taking advantage of other nearby peers; these receive the package, hold it, and forward to other peers trying to find the receiver.
 
-A message can be transmitted using mesh transmission, direct transmission, or both.
 ### Receive Data
 
 When a packet has been received, the following method will be invoked:
@@ -393,19 +394,12 @@ enum class PropagationProfile {
 
 ## Secure connections
 
-Bridgefy's functionality is its ability to provide a secure connection for sending data within the mesh network.
-To ensure the privacy and security of sensitive data, Bridgefy SDK employs encryption techniques. 
-Encryption involves transforming data into an unreadable format, which can only be deciphered by authorized
-recipients who possess the correct decryption key.
+Part of Bridgefy's functionality is its ability to provide a secure connection for sending data within a mesh network. To ensure the privacy and security of sensitive data, Bridgefy SDK employs encryption techniques. Encryption involves transforming data into an unreadable format, which can only be deciphered by authorized recipients who possess the correct decryption key.
 
-Bridgefy utilizes the Signal Protocol, a widely recognized and trusted encryption protocol, to encrypt the sensitive
-data exchanged between devices in the mesh network. The Signal Protocol provides end-to-end encryption, meaning the
-data remains encrypted throughout its entire journey from the sender to the intended recipient.
-This ensures that even if someone intercepts the data, they won't be able to access its contents without the proper
-decryption key.
+Bridgefy utilizes the Signal Protocol, a widely recognized and trusted encryption protocol, to encrypt sensitive data exchanged between devices in a mesh network. The Signal Protocol provides end-to-end encryption, meaning the data remains encrypted throughout its entire journey from the sender to the intended recipient. This ensures that even if someone intercepts the data, they won't be able to access its contents without the proper decryption key.
 
-> However, users also have the option to implement their own custom encryption if they prefer,
-> which doesn't require the establishment of a secure connection but necessitates robust encryption key management practices.
+> However, companies and developers who use the Bridgefy SDK in their mobile apps also have the option to implement their own custom encryption if they prefer,
+> which doesn't require the establishment of a secure connection but needs robust encryption-key management practices
 
 
 ### Established secure connection
@@ -451,7 +445,7 @@ Additionally, requesting a secure connection that is not simultaneous can also b
 
 ## Using ProGuard
 
-If you are using Proguard in your project, include the following lines to your configuration file:
+If you are using ProGuard in your project, include the following lines to your configuration file:
 
 ```gradle
  -keep class me.bridgefy.** { *; }
@@ -463,7 +457,7 @@ If you are using Proguard in your project, include the following lines to your c
 
 ## Supported Devices
 
-Bridgefy's support for devices extends to smartphones, tablets, wearables, and IoT devices, making it a versatile platform that caters to various communication needs. By enabling connectivity across a diverse range of devices, Bridgefy ensures that users can easily establish connections and exchange information regardless of the devices they are using.
+Bridgefy's support for devices extends to smartphones and tablets, as long as they run iOS or Android, and have BLE. This makes Bridgefy a versatile platform that caters to various communication needs. By enabling connectivity across a diverse range of devices, Bridgefy ensures that users can easily establish connections and exchange information regardless of whether they have an internet connection or not.
 
 ## Contact & Support
 + contact@bridgefy.me
